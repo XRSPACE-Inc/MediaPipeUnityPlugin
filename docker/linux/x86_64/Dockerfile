@@ -1,7 +1,7 @@
 ARG UID=1000
-ARG ANDROID_SDK_BUILD_TOOLS_VERSION=30.0.3
-ARG ANDROID_SDK_VERSION=30
-ARG ANDROID_NDK_VERSION=21.4.7075529
+ARG ANDROID_SDK_BUILD_TOOLS_VERSION=35.0.0
+ARG ANDROID_SDK_VERSION=35
+ARG ANDROID_NDK_VERSION=28.0.13004108
 
 FROM ubuntu:20.04 AS base
 
@@ -27,7 +27,35 @@ RUN apt-get update && \
         software-properties-common \
         sudo \
         unzip \
+        wget \
         zip
+
+# Install gcc-13
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends gcc-13 g++-13 && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100 --slave /usr/bin/g++ g++ /usr/bin/g++-13
+
+# Install Clang 16
+RUN curl https://apt.llvm.org/llvm.sh -o llvm.sh && \
+    chmod +x llvm.sh && \
+    ./llvm.sh 16 && \
+    ln -sf /usr/bin/clang-16 /usr/bin/clang && \
+    ln -sf /usr/bin/clang++-16 /usr/bin/clang++ && \
+    ln -sf /usr/bin/clang-format-16 /usr/bin/clang-format
+
+# Upgrade binutils (>= 2.40)
+RUN apt-get install -y --no-install-recommends bison texinfo && \
+    curl -O https://ftp.gnu.org/gnu/binutils/binutils-2.40.tar.gz && \
+    tar -xvzof binutils-2.40.tar.gz && \
+    cd binutils-2.40 && \
+    mkdir build && \
+    cd build && \
+    ../configure --prefix=/usr --enable-gold --enable-ld=default && \
+    make -j `nproc` && \
+    make install
+
+
 
 FROM base AS android
 
@@ -37,8 +65,8 @@ ARG ANDROID_SDK_BUILD_TOOLS_VERSION
 ARG ANDROID_SDK_VERSION
 ARG ANDROID_NDK_VERSION
 
-ENV COMMANDLINETOOLS_ZIP commandlinetools.zip
-ENV COMMANDLINETOOLS_SHA256 124f2d5115eee365df6cf3228ffbca6fc3911d16f8025bebd5b1c6e2fcfa7faf
+ENV COMMANDLINETOOLS_ZIP=commandlinetools.zip
+ENV COMMANDLINETOOLS_SHA256=124f2d5115eee365df6cf3228ffbca6fc3911d16f8025bebd5b1c6e2fcfa7faf
 
 
 RUN curl -L https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -o ${COMMANDLINETOOLS_ZIP} && \

@@ -5,23 +5,11 @@ on:
       bazelBuildArgs:
         type: string
         description: A value for `--bazel_build_opts`
-      linuxBuildArgs:
-        type: string
-        description: Build options for Linux Build
+        default: '--experimental_scale_timeouts=10.0 --http_timeout_scaling=10.0' 
       androidBuildArgs:
         type: string
         description: Build options for Android Build
-      macosBuildArgs:
-        type: string
-        description: Build options for macOS Build
-      iosBuildArgs:
-        type: string
-        description: Build options for iOS Build
-      windowsBuildArgs:
-        type: string
-        description: Build options for Windows Build
-  schedule:
-    - cron: 0 12 * * 0,3
+        default: '--android fat --android_ndk_api_level 28'
 jobs:
   package:
     uses: ./.github/workflows/package.yml
@@ -29,9 +17,5 @@ jobs:
       ref: ${{ github.event.ref }}
       packageName: package
       bazelBuildArgs: ${{ inputs.bazelBuildArgs || '--experimental_scale_timeouts=10.0 --http_timeout_scaling=10.0' }}
-      linuxBuildArgs: ${{ inputs.linuxBuildArgs || '--desktop gpu --opencv cmake' }}
-      androidBuildArgs: ${{ inputs.androidBuildArgs || '--android fat --android_ndk_api_level 21' }}
-      macosBuildArgs: ${{ inputs.macosBuildArgs || '--desktop cpu --opencv cmake --macos_universal' }}
-      iosBuildArgs: ${{ inputs.iosBuildArgs || '--ios arm64' }}
-      windowsBuildArgs: ${{ inputs.windowsBuildArgs || '--desktop cpu --opencv cmake' }}
+      androidBuildArgs: ${{ inputs.androidBuildArgs || '--android fat --android_ndk_api_level 28' }}
     secrets: inherit
