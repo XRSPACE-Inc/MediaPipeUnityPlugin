@@ -22,7 +22,7 @@ RUN apt-get update && \
         mesa-common-dev \
         nasm \
         npm \
-        openjdk-11-jdk \
+        openjdk-17-jdk \
         pkg-config \
         software-properties-common \
         sudo \
