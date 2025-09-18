@@ -13,7 +13,7 @@ on:
         default: '--experimental_scale_timeouts=10.0 --http_timeout_scaling=10.0'
       androidBuildArgs:
         type: string
-        default: '--android fat --android_ndk_api_level 28'
+        default: '--android arm64 --android_ndk_api_level 28'
     secrets:
       UNITY_EMAIL:
         required: false

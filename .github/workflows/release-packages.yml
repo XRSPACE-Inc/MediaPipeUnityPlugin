@@ -10,7 +10,7 @@ jobs:
     with:
       ref: ${{ github.event.ref }}
       packageName: package-for-development
-      androidBuildArgs: '--android fat --android_ndk_api_level 21'
+      androidBuildArgs: '--android arm64 --android_ndk_api_level 28'
     secrets: inherit
 
   package-for-production:
@@ -18,5 +18,5 @@ jobs:
     with:
       ref: ${{ github.event.ref }}
       packageName: package-for-production
-      androidBuildArgs: '--linkopt="-s" --android fat --android_ndk_api_level 21'
+      androidBuildArgs: '--linkopt="-s" --android arm64 --android_ndk_api_level 28'
     secrets: inherit
